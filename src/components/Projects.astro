@@ -1,0 +1,75 @@
+---
+import ProjectCard from './ProjectCard.astro';
+
+// ── Agrega tus proyectos reales aquí ──
+const projects = [
+  {
+    title: "Plataforma de Gestión Interna",
+    description: "Sistema web para gestionar procesos operativos, con dashboard en tiempo real y módulo de reportes automatizados.",
+    tags: ["React", "Laravel", "MySQL", "Tailwind"],
+    liveUrl: undefined,
+    repoUrl: undefined,
+  },
+  {
+    title: "Dashboard de Business Intelligence",
+    description: "Panel de análisis de datos con visualizaciones interactivas, integrado con Power BI y automatización de informes semanales.",
+    tags: ["Power BI", "Python", "PostgreSQL", "Data Studio"],
+    liveUrl: undefined,
+    repoUrl: undefined,
+  },
+  {
+    title: "Portafolio Personal",
+    description: "Este sitio — construido con Astro y Tailwind CSS, optimizado para rendimiento, accesibilidad y SEO.",
+    tags: ["Astro", "Tailwind", "TypeScript"],
+    liveUrl: undefined,
+    repoUrl: undefined,
+  },
+];
+---
+
+<section class="section" id="proyectos" aria-labelledby="projects-title">
+  <div class="container">
+    <div class="projects__header fade-in">
+      <p class="section-label">Proyectos</p>
+      <h2 class="section-title" id="projects-title">Lo que he construido</h2>
+      <p class="projects__subtitle">
+        Selección de proyectos que reflejan mi proceso y habilidades técnicas.
+      </p>
+    </div>
+
+    <div class="projects__grid" role="list">
+      {projects.map((project, i) => (
+        <div class="fade-in" style={`transition-delay:${i * 80}ms`} role="listitem">
+          <ProjectCard {...project} />
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .projects__header {
+    max-width: 560px;
+    margin-bottom: 48px;
+  }
+  .projects__header .section-label { margin-bottom: 8px; }
+  .projects__header .section-title { margin-bottom: 12px; }
+  .projects__subtitle {
+    color: var(--color-text-secondary);
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  .projects__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  @media (max-width: 1024px) {
+    .projects__grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 640px) {
+    .projects__grid { grid-template-columns: 1fr; }
+  }
+</style>

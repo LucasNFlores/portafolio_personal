@@ -1,0 +1,125 @@
+---
+const categories = [
+  {
+    icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>`,
+    name: "Frontend",
+    skills: [
+      { name: "React.js", color: "green" },
+      { name: "Astro.js", color: "green" },
+      { name: "JavaScript", color: "green" },
+      { name: "HTML5", color: "green" },
+      { name: "CSS3", color: "green" },
+      { name: "Tailwind", color: "green" },
+      { name: "Three.js", color: "purple" },
+    ],
+  },
+  {
+    icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>`,
+    name: "Backend",
+    skills: [
+      { name: "Laravel", color: "green" },
+      { name: "PHP", color: "green" },
+      { name: "Python", color: "green" },
+      { name: "MySQL", color: "green" },
+      { name: "PostgreSQL", color: "green" },
+      { name: "Express.js", color: "purple" },
+      { name: "Firebase", color: "purple" },
+    ],
+  },
+  {
+    icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>`,
+    name: "BI & Data",
+    skills: [
+      { name: "Power BI", color: "green" },
+      { name: "Data Studio", color: "green" },
+      { name: "SQL", color: "green" },
+      { name: "Pandas", color: "purple" },
+    ],
+  },
+  {
+    icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>`,
+    name: "Workflow",
+    skills: [
+      { name: "Git", color: "green" },
+      { name: "GitHub", color: "green" },
+      { name: "Figma", color: "green" },
+      { name: "Jira", color: "purple" },
+      { name: "Scrum", color: "purple" },
+      { name: "Trello", color: "purple" },
+    ],
+  },
+];
+---
+
+<section class="section" id="skills" aria-labelledby="stack-title">
+  <div class="container">
+    <div class="stack__header fade-in">
+      <p class="section-label">Herramientas</p>
+      <h2 class="section-title" id="stack-title">Tech Stack &amp; Tools</h2>
+    </div>
+
+    <div class="stack__grid" role="list">
+      {categories.map((cat, i) => (
+        <div class="stack__card card fade-in" style={`transition-delay:${i * 80}ms`} role="listitem">
+          <div class="stack__cat-header">
+            <span class="stack__cat-icon" aria-hidden="true" set:html={cat.icon} />
+            <h3 class="stack__cat-name">{cat.name}</h3>
+          </div>
+          <div class="stack__skills" role="list" aria-label={`Skills de ${cat.name}`}>
+            {cat.skills.map(skill => (
+              <span
+                class={`tag${skill.color === 'purple' ? ' tag-purple' : ''}`}
+                role="listitem"
+              >{skill.name}</span>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .stack__header {
+    margin-bottom: 48px;
+  }
+  .stack__header .section-label { margin-bottom: 8px; }
+
+  .stack__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+
+  .stack__card {
+    padding: 24px;
+  }
+
+  .stack__cat-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .stack__cat-icon {
+    color: var(--color-accent-green);
+    flex-shrink: 0;
+  }
+  .stack__cat-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+
+  .stack__skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  @media (max-width: 1024px) {
+    .stack__grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 500px) {
+    .stack__grid { grid-template-columns: 1fr; }
+  }
+</style>
