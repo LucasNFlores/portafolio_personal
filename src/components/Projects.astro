@@ -1,25 +1,66 @@
 ---
-import ProjectCard from './ProjectCard.astro';
+import ProjectCard from "./ProjectCard.astro";
 
 // ── Agrega tus proyectos reales aquí ──
 const projects = [
   {
-    title: "Plataforma de Gestión Interna",
-    description: "Sistema web para gestionar procesos operativos, con dashboard en tiempo real y módulo de reportes automatizados.",
-    tags: ["React", "Laravel", "MySQL", "Tailwind"],
-    liveUrl: undefined,
+    title: "SIGHE — Gestión de Hidrantes",
+    description:
+      "Sistema web en producción para la gestión y visualización geográfica de hidrantes de emergencia, " +
+      "desarrollado en Silicon I+D+I. Bomberos, jefes de cuartel y administradores operan con " +
+      "vistas y permisos diferenciados. Mapa interactivo con MapTiler + Leaflet, " +
+      "autenticación Google OAuth via Auth.js y validación de formularios con Valibot. " +
+      "Desplegado en Vercel con entornos separados de producción y testing.",
+    tags: ["Astro", "React", "TypeScript", "Tailwind", "MapTiler", "Vercel"],
+    liveUrl: "https://www.sighe.siliconmisiones.com.ar/",
     repoUrl: undefined,
   },
   {
-    title: "Dashboard de Business Intelligence",
-    description: "Panel de análisis de datos con visualizaciones interactivas, integrado con Power BI y automatización de informes semanales.",
-    tags: ["Power BI", "Python", "PostgreSQL", "Data Studio"],
+    title: "Almacén en Orden",
+    description:
+      "Sistema POS multi-tenant para almacenes y pequeños comercios. " +
+      "Cada organización opera de forma aislada con gestión de productos, " +
+      "turnos de caja, registro de ventas y reportes de métricas. " +
+      "API REST con Fastify v5 + Drizzle ORM, autenticación con Better Auth, " +
+      "sistema de roles (ADMIN / CAJERO) y seguridad por capas: rate limit, CSRF, Helmet y audit log de 401/403.",
+    tags: [
+      "Next.js",
+      "Fastify",
+      "TypeScript",
+      "PostgreSQL",
+      "Drizzle ORM",
+      "Bun",
+    ],
+    liveUrl: undefined,
+    repoUrl: undefined,
+  },
+  ,
+  {
+    title: "Dashboard BI — RedCoatic",
+    description:
+      "Pipeline de datos y dashboards analíticos para la plataforma educativa RedCoatic. " +
+      "Integré múltiples fuentes (Google Forms, Google Sheets y base de datos MySQL) con Python, " +
+      "realizando limpieza y normalización en Power BI para producir reportes de distribución " +
+      "de estudiantes (sexo, localidad, nivel educativo), análisis por curso con métricas de " +
+      "inscripciones, aprobaciones y deserciones, y seguimiento por categoría de curso.",
+    tags: ["Power BI", "Python", "MySQL", "Google Sheets API"],
+  },
+  {
+    title: "Glosario Amigo",
+    description:
+      "App Android nativa que arranqué para adentrarme en el desarrollo mobile. " +
+      "Glosario colaborativo universitario con navegación académica (institución → carrera → materia), " +
+      "listas de estudio, notas privadas por término y flujo de sugerencias con moderación por roles. " +
+      "Arquitectura offline-first: la UI siempre lee desde Room (SQLite) mientras el Repository " +
+      "sincroniza con Firestore en background vía Coroutines + Flow.",
+    tags: ["Kotlin", "Jetpack Compose", "Firebase", "Room", "Hilt", "MVVM"],
     liveUrl: undefined,
     repoUrl: undefined,
   },
   {
     title: "Portafolio Personal",
-    description: "Este sitio — construido con Astro y Tailwind CSS, optimizado para rendimiento, accesibilidad y SEO.",
+    description:
+      "Este sitio — construido con Astro y Tailwind CSS, optimizado para rendimiento, accesibilidad y SEO.",
     tags: ["Astro", "Tailwind", "TypeScript"],
     liveUrl: undefined,
     repoUrl: undefined,
@@ -38,11 +79,17 @@ const projects = [
     </div>
 
     <div class="projects__grid" role="list">
-      {projects.map((project, i) => (
-        <div class="fade-in" style={`transition-delay:${i * 80}ms`} role="listitem">
-          <ProjectCard {...project} />
-        </div>
-      ))}
+      {
+        projects.map((project, i) => (
+          <div
+            class="fade-in"
+            style={`transition-delay:${i * 80}ms`}
+            role="listitem"
+          >
+            <ProjectCard {...project} />
+          </div>
+        ))
+      }
     </div>
   </div>
 </section>
@@ -52,8 +99,12 @@ const projects = [
     max-width: 560px;
     margin-bottom: 48px;
   }
-  .projects__header .section-label { margin-bottom: 8px; }
-  .projects__header .section-title { margin-bottom: 12px; }
+  .projects__header .section-label {
+    margin-bottom: 8px;
+  }
+  .projects__header .section-title {
+    margin-bottom: 12px;
+  }
   .projects__subtitle {
     color: var(--color-text-secondary);
     font-size: 1rem;
@@ -67,9 +118,13 @@ const projects = [
   }
 
   @media (max-width: 1024px) {
-    .projects__grid { grid-template-columns: repeat(2, 1fr); }
+    .projects__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
   @media (max-width: 640px) {
-    .projects__grid { grid-template-columns: 1fr; }
+    .projects__grid {
+      grid-template-columns: 1fr;
+    }
   }
 </style>

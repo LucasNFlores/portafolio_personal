@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm --version)",
+      "Bash(npm create:*)",
+      "Bash(mv lunar-solstice/* .)",
+      "Bash(mv lunar-solstice/.gitignore .)",
+      "Bash(mv lunar-solstice/.env.d.ts .)",
+      "Bash(cp -r lunar-solstice/node_modules .)",
+      "Bash(rm -rf lunar-solstice)",
+      "Bash(npx astro:*)"
+    ]
+  }
+}

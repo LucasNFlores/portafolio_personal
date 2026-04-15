@@ -31,7 +31,6 @@ const courses = [
 const languages = [
   { name: "Español", level: "Nativo", percent: 100 },
   { name: "Inglés", level: "Conversacional", percent: 70 },
-  { name: "Portugués", level: "Básico", percent: 30 },
 ];
 ---
 
@@ -47,38 +46,61 @@ const languages = [
       <div class="edu__left">
         <!-- Degrees -->
         <div class="edu__degrees fade-in">
-          {education.map((item) => (
-            <div class="edu__degree card">
-              <div class="edu__degree-icon" aria-hidden="true" set:html={item.icon} />
-              <div class="edu__degree-body">
-                <div class="edu__degree-meta">
-                  <span class="edu__period">{item.period}</span>
-                  {item.current && <span class="tag">Cursando</span>}
+          {
+            education.map((item) => (
+              <div class="edu__degree card">
+                <div
+                  class="edu__degree-icon"
+                  aria-hidden="true"
+                  set:html={item.icon}
+                />
+                <div class="edu__degree-body">
+                  <div class="edu__degree-meta">
+                    <span class="edu__period">{item.period}</span>
+                    {item.current && <span class="tag">Cursando</span>}
+                  </div>
+                  <h3 class="edu__degree-title">{item.degree}</h3>
+                  <p class="edu__degree-inst">{item.institution}</p>
                 </div>
-                <h3 class="edu__degree-title">{item.degree}</h3>
-                <p class="edu__degree-inst">{item.institution}</p>
               </div>
-            </div>
-          ))}
+            ))
+          }
         </div>
 
+        {
+          /*
         <!-- Courses -->
-        <div class="edu__courses fade-in" style="transition-delay:120ms">
+
+                  <div class="edu__courses fade-in" style="transition-delay:120ms">
           <p class="edu__courses-label section-label">Certificaciones</p>
           <div class="edu__courses-grid" role="list">
-            {courses.map(c => (
-              <div class="edu__course card" role="listitem">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true" style="color:var(--color-accent-green);flex-shrink:0;margin-top:1px">
-                  <polyline points="20 6 9 17 4 12"/>
-                </svg>
-                <div>
-                  <p class="edu__course-name">{c.name}</p>
-                  <p class="edu__course-provider">{c.provider}</p>
+            {
+              courses.map((c) => (
+                <div class="edu__course card" role="listitem">
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    aria-hidden="true"
+                    style="color:var(--color-accent-green);flex-shrink:0;margin-top:1px"
+                  >
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  <div>
+                    <p class="edu__course-name">{c.name}</p>
+                    <p class="edu__course-provider">{c.provider}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            }
           </div>
         </div>
+          */
+        }
       </div>
 
       <!-- Right: languages -->
@@ -86,17 +108,29 @@ const languages = [
         <div class="edu__lang-card card">
           <p class="section-label" style="margin-bottom:20px">Idiomas</p>
           <div class="edu__lang-list" role="list">
-            {languages.map(lang => (
-              <div class="edu__lang-item" role="listitem">
-                <div class="edu__lang-header">
-                  <span class="edu__lang-name">{lang.name}</span>
-                  <span class="edu__lang-level">{lang.level}</span>
+            {
+              languages.map((lang) => (
+                <div class="edu__lang-item" role="listitem">
+                  <div class="edu__lang-header">
+                    <span class="edu__lang-name">{lang.name}</span>
+                    <span class="edu__lang-level">{lang.level}</span>
+                  </div>
+                  <div
+                    class="edu__lang-bar"
+                    role="progressbar"
+                    aria-valuenow={lang.percent}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-label={`${lang.name}: ${lang.level}`}
+                  >
+                    <div
+                      class="edu__lang-fill"
+                      style={`width:${lang.percent}%`}
+                    />
+                  </div>
                 </div>
-                <div class="edu__lang-bar" role="progressbar" aria-valuenow={lang.percent} aria-valuemin={0} aria-valuemax={100} aria-label={`${lang.name}: ${lang.level}`}>
-                  <div class="edu__lang-fill" style={`width:${lang.percent}%`}></div>
-                </div>
-              </div>
-            ))}
+              ))
+            }
           </div>
         </div>
       </div>
@@ -108,7 +142,9 @@ const languages = [
   .edu__header {
     margin-bottom: 48px;
   }
-  .edu__header .section-label { margin-bottom: 8px; }
+  .edu__header .section-label {
+    margin-bottom: 8px;
+  }
 
   .edu__layout {
     display: grid;
@@ -158,7 +194,9 @@ const languages = [
   }
 
   /* Courses */
-  .edu__courses-label { margin-bottom: 16px; }
+  .edu__courses-label {
+    margin-bottom: 16px;
+  }
   .edu__courses-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -216,16 +254,30 @@ const languages = [
   }
   .edu__lang-fill {
     height: 100%;
-    background: linear-gradient(90deg, var(--color-accent-green), color-mix(in srgb, var(--color-accent-green) 60%, var(--color-accent-purple)));
+    background: linear-gradient(
+      90deg,
+      var(--color-accent-green),
+      color-mix(
+        in srgb,
+        var(--color-accent-green) 60%,
+        var(--color-accent-purple)
+      )
+    );
     border-radius: 99px;
     transition: width 800ms var(--ease-smooth);
   }
 
   @media (max-width: 900px) {
-    .edu__layout { grid-template-columns: 1fr; }
-    .edu__lang-card { position: static; }
+    .edu__layout {
+      grid-template-columns: 1fr;
+    }
+    .edu__lang-card {
+      position: static;
+    }
   }
   @media (max-width: 640px) {
-    .edu__courses-grid { grid-template-columns: 1fr; }
+    .edu__courses-grid {
+      grid-template-columns: 1fr;
+    }
   }
 </style>
