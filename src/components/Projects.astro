@@ -1,40 +1,47 @@
 ---
 import ProjectCard from "./ProjectCard.astro";
+import fs from "fs";
+import path from "path";
 
 // ── Agrega tus proyectos reales aquí ──
 const projects = [
   {
-    title: "SIGHE — Gestión de Hidrantes",
-    description:
-      "Sistema web en producción para la gestión y visualización geográfica de hidrantes de emergencia, " +
-      "desarrollado en Silicon I+D+I. Bomberos, jefes de cuartel y administradores operan con " +
-      "vistas y permisos diferenciados. Mapa interactivo con MapTiler + Leaflet, " +
-      "autenticación Google OAuth via Auth.js y validación de formularios con Valibot. " +
-      "Desplegado en Vercel con entornos separados de producción y testing.",
-    tags: ["Astro", "React", "TypeScript", "Tailwind", "MapTiler", "Vercel"],
+    title: "SIGHE — Gestión de Hidrantes de Emergencia",                                                                                                              
+    description:                                                                                                                                                            "Sistema web en producción para los Bomberos Voluntarios de Misiones, Argentina, orientado a la " +
+      "gestión y visualización geográfica de hidrantes de emergencia, desarrollado en Silicon I+D+I. " +                                                                    "Bomberos, jefes de cuartel y administradores operan con vistas y permisos diferenciados. " +                                                                   
+      "Mapa interactivo con MapTiler + Leaflet, autenticación Google OAuth via Auth.js, " +
+      "validación de formularios con Valibot y comunicación con API externa mediante Axios " +
+      "con interceptores de sesión. Desplegado en Vercel con entornos separados de producción y testing.",
+    tags: ["Astro", "React", "TypeScript", "Tailwind", "MapTiler", "Leaflet", "Auth.js", "Vercel"],
     liveUrl: "https://www.sighe.siliconmisiones.com.ar/",
     repoUrl: undefined,
+    imagesFolder: "sighe",
   },
   {
     title: "Almacén en Orden",
     description:
       "Sistema POS multi-tenant para almacenes y pequeños comercios. " +
-      "Cada organización opera de forma aislada con gestión de productos, " +
-      "turnos de caja, registro de ventas y reportes de métricas. " +
-      "API REST con Fastify v5 + Drizzle ORM, autenticación con Better Auth, " +
-      "sistema de roles (ADMIN / CAJERO) y seguridad por capas: rate limit, CSRF, Helmet y audit log de 401/403.",
+      "Cada organización opera de forma aislada con gestión de productos (stock fraccional), " +
+      "turnos de caja, registro de ventas con múltiples medios de pago y reportes analíticos. " +
+      "API REST con Fastify v5 + Drizzle ORM sobre PostgreSQL, autenticación por sesión con Better Auth " +
+      "y sistema de roles en dos niveles: ADMIN / CAJERO por organización y SUPER_ADMIN de plataforma. " +
+      "Seguridad por capas: rate limiting, CSRF, Helmet, CORS y audit log de acciones críticas. " +
+      "Frontend en Next.js 15 (App Router) con shadcn/ui, desplegado en Docker con builds multi-stage.",
     tags: [
       "Next.js",
       "Fastify",
       "TypeScript",
       "PostgreSQL",
       "Drizzle ORM",
+      "Better Auth",
+      "shadcn/ui",
+      "Docker",
       "Bun",
     ],
     liveUrl: undefined,
     repoUrl: undefined,
+    imagesFolder: "almacen_en_orden",
   },
-  ,
   {
     title: "Dashboard BI — RedCoatic",
     description:
@@ -44,6 +51,7 @@ const projects = [
       "de estudiantes (sexo, localidad, nivel educativo), análisis por curso con métricas de " +
       "inscripciones, aprobaciones y deserciones, y seguimiento por categoría de curso.",
     tags: ["Power BI", "Python", "MySQL", "Google Sheets API"],
+    imagesFolder: undefined,
   },
   {
     title: "Glosario Amigo",
@@ -56,6 +64,7 @@ const projects = [
     tags: ["Kotlin", "Jetpack Compose", "Firebase", "Room", "Hilt", "MVVM"],
     liveUrl: undefined,
     repoUrl: undefined,
+    imagesFolder: undefined,
   },
   {
     title: "Portafolio Personal",
@@ -64,8 +73,40 @@ const projects = [
     tags: ["Astro", "Tailwind", "TypeScript"],
     liveUrl: undefined,
     repoUrl: undefined,
+    imagesFolder: undefined,
   },
 ];
+
+// Read images at build time for projects with imagesFolder
+const projectsWithImages = projects.map((project) => {
+  if (project.imagesFolder) {
+    const folderPath = path.join(
+      process.cwd(),
+      "public",
+      "img_proyects",
+      project.imagesFolder
+    );
+    try {
+      const files = fs
+        .readdirSync(folderPath)
+        .filter((f) => /\.(png|jpg|jpeg|webp|avif)$/i.test(f))
+        .sort();
+      project.images = files.map(
+        (f) =>
+          `/img_proyects/${project.imagesFolder}/${encodeURIComponent(f)}`
+      );
+    } catch {
+      project.images = [];
+    }
+  } else {
+    project.images = [];
+  }
+  return project;
+});
+
+const projectsWithImagesList = projectsWithImages.filter(
+  (p) => p.images && p.images.length > 0
+);
 ---
 
 <section class="section" id="proyectos" aria-labelledby="projects-title">
@@ -78,21 +119,109 @@ const projects = [
       </p>
     </div>
 
-    <div class="projects__grid" role="list">
+    <div class="projects__grid" id="projects-grid" role="list">
       {
-        projects.map((project, i) => (
+        projectsWithImages.map((project, i) => (
           <div
             class="fade-in"
             style={`transition-delay:${i * 80}ms`}
             role="listitem"
           >
-            <ProjectCard {...project} />
+            <ProjectCard
+              {...project}
+              image={project.images?.[0]}
+              images={project.images}
+              clickable={project.images && project.images.length > 0}
+              dataIndex={i}
+            />
           </div>
         ))
       }
     </div>
   </div>
 </section>
+
+{/* Hidden modals — one per project with images */}
+{
+  projectsWithImagesList.map((project, modalIdx) => {
+    const globalIdx = projectsWithImages.findIndex(
+      (p) => p.title === project.title
+    );
+    return (
+      <div
+        class="modal-overlay"
+        data-modal-index={globalIdx}
+        aria-hidden="true"
+        role="dialog"
+        aria-modal="true"
+      >
+        <div class="modal-container">
+          <button
+            type="button"
+            class="modal-close"
+            aria-label="Cerrar"
+          >
+            &times;
+          </button>
+
+          <div class="modal-carousel">
+            <div class="carousel-viewport">
+              {project.images.map((src, imgIdx) => (
+                <img
+                  src={src}
+                  alt={`${project.title} - imagen ${imgIdx + 1}`}
+                  class={`carousel-slide ${imgIdx === 0 ? "carousel-slide--active" : "carousel-slide--hidden"}`}
+                  data-slide-index={imgIdx}
+                  loading="lazy"
+                />
+              ))}
+            </div>
+            {project.images.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  class="carousel-btn carousel-prev"
+                  aria-label="Imagen anterior"
+                >
+                  &lsaquo;
+                </button>
+                <button
+                  type="button"
+                  class="carousel-btn carousel-next"
+                  aria-label="Imagen siguiente"
+                >
+                  &rsaquo;
+                </button>
+                <div class="carousel-dots">
+                  {project.images.map((_, dotIdx) => (
+                    <button
+                      type="button"
+                      class={`carousel-dot ${dotIdx === 0 ? "active" : ""}`}
+                      data-slide={dotIdx}
+                      aria-label={`Ver imagen ${dotIdx + 1}`}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
+            {project.images.length > 1 && (
+              <span class="carousel-counter">
+                <span class="carousel-current">1</span> / {project.images.length}
+              </span>
+            )}
+          </div>
+
+          <ProjectCard {...project} hideImage />
+        </div>
+      </div>
+    );
+  })
+}
+
+{/* Embedded data for client JS */}
+<script id="projects-data" type="application/json">
+  {JSON.stringify(projectsWithImages)}
+</script>
 
 <style>
   .projects__header {
@@ -127,4 +256,351 @@ const projects = [
       grid-template-columns: 1fr;
     }
   }
+
+  /* ===== Modal Styles ===== */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 300ms var(--ease-smooth),
+                visibility 300ms var(--ease-smooth);
+  }
+  .modal-overlay.open {
+    opacity: 1;
+    visibility: visible;
+  }
+  .modal-overlay[aria-hidden="true"] {
+    pointer-events: none;
+  }
+
+  .modal-container {
+    position: relative;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    max-width: 860px;
+    width: 95vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    transform: scale(0.95) translateY(20px);
+    transition: transform 300ms var(--ease-smooth);
+  }
+  .modal-overlay.open .modal-container {
+    transform: scale(1) translateY(0);
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 10;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 150ms var(--ease-smooth);
+  }
+  .modal-close:hover {
+    background: rgba(0, 0, 0, 0.9);
+  }
+
+  /* ===== Carousel Styles ===== */
+  .modal-carousel {
+    position: relative;
+  }
+
+  .carousel-viewport {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    border-radius: var(--radius-card) var(--radius-card) 0 0;
+    background: var(--color-bg-secondary);
+  }
+
+  .carousel-slide {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 8px;
+    cursor: zoom-in;
+    transition: opacity 250ms var(--ease-smooth);
+  }
+  .carousel-slide--active {
+    opacity: 1;
+    z-index: 1;
+  }
+  .carousel-slide--hidden {
+    opacity: 0;
+    z-index: 0;
+  }
+
+  .carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    border: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    transition: background 150ms var(--ease-smooth);
+  }
+  .carousel-btn:hover {
+    background: rgba(0, 0, 0, 0.9);
+  }
+  .carousel-prev {
+    left: 12px;
+  }
+  .carousel-next {
+    right: 12px;
+  }
+
+  .carousel-dots {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 2;
+  }
+  .carousel-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.4);
+    border: none;
+    cursor: pointer;
+    transition: background 150ms var(--ease-smooth);
+  }
+  .carousel-dot:hover {
+    background: rgba(255, 255, 255, 0.7);
+  }
+  .carousel-dot.active {
+    background: white;
+  }
+
+  .carousel-counter {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 99px;
+    font-size: 0.8rem;
+    z-index: 2;
+  }
+
+  /* ===== Lightbox Styles ===== */
+  .lightbox-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: rgba(0, 0, 0, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: zoom-out;
+    animation: fadeIn 200ms var(--ease-smooth);
+  }
+  .lightbox-overlay img {
+    max-width: 95vw;
+    max-height: 95vh;
+    object-fit: contain;
+  }
+  .lightbox-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* Mobile adjustments */
+  @media (max-width: 640px) {
+    .modal-container {
+      width: 100vw;
+      max-height: 100vh;
+      border-radius: 0;
+    }
+    .carousel-viewport {
+      aspect-ratio: 4 / 3;
+      border-radius: 0;
+    }
+    .carousel-btn {
+      width: 36px;
+      height: 36px;
+      font-size: 1.2rem;
+    }
+    .carousel-prev { left: 8px; }
+    .carousel-next { right: 8px; }
+  }
 </style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const modals = document.querySelectorAll(".modal-overlay");
+    const grid = document.getElementById("projects-grid");
+    let currentModal = null;
+    let currentSlideIndex = 0;
+    let slides = [];
+    let dots = [];
+    let counter = null;
+
+    // Open modal when clicking a card
+    grid?.addEventListener("click", (e) => {
+      const btn = e.target.closest(".project-card-btn");
+      if (!btn) return;
+      const index = btn.dataset.index;
+      const modal = document.querySelector(`[data-modal-index="${index}"]`);
+      if (!modal) return;
+      openModal(modal);
+    });
+
+    function openModal(modal) {
+      currentModal = modal;
+      modal.classList.add("open");
+      modal.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+
+      // Initialize carousel
+      slides = Array.from(modal.querySelectorAll(".carousel-slide"));
+      dots = Array.from(modal.querySelectorAll(".carousel-dot"));
+      counter = modal.querySelector(".carousel-current");
+      currentSlideIndex = 0;
+      updateCarousel();
+
+      // Bind carousel controls
+      const prevBtn = modal.querySelector(".carousel-prev");
+      const nextBtn = modal.querySelector(".carousel-next");
+      prevBtn?.addEventListener("click", goPrev);
+      nextBtn?.addEventListener("click", goNext);
+
+      dots.forEach((dot) => {
+        dot.addEventListener("click", () => {
+          currentSlideIndex = parseInt(dot.dataset.slide);
+          updateCarousel();
+        });
+      });
+
+      // Lightbox on image click
+      slides.forEach((slide) => {
+        slide.addEventListener("click", () => openLightbox(slide.src));
+      });
+    }
+
+    function closeModal() {
+      if (!currentModal) return;
+      currentModal.classList.remove("open");
+      currentModal.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+      currentModal = null;
+    }
+
+    function goPrev() {
+      if (!slides.length) return;
+      currentSlideIndex =
+        (currentSlideIndex - 1 + slides.length) % slides.length;
+      updateCarousel();
+    }
+
+    function goNext() {
+      if (!slides.length) return;
+      currentSlideIndex = (currentSlideIndex + 1) % slides.length;
+      updateCarousel();
+    }
+
+    function updateCarousel() {
+      slides.forEach((slide, i) => {
+        if (i === currentSlideIndex) {
+          slide.classList.add("carousel-slide--active");
+          slide.classList.remove("carousel-slide--hidden");
+        } else {
+          slide.classList.remove("carousel-slide--active");
+          slide.classList.add("carousel-slide--hidden");
+        }
+      });
+
+      dots.forEach((dot, i) => {
+        dot.classList.toggle("active", i === currentSlideIndex);
+      });
+
+      if (counter) {
+        counter.textContent = currentSlideIndex + 1;
+      }
+    }
+
+    function openLightbox(src) {
+      const lightbox = document.createElement("div");
+      lightbox.className = "lightbox-overlay";
+      lightbox.innerHTML = `
+        <img src="${src}" alt="" />
+        <button class="lightbox-close" aria-label="Cerrar">×</button>
+      `;
+      lightbox.addEventListener("click", () => lightbox.remove());
+      lightbox
+        .querySelector(".lightbox-close")
+        ?.addEventListener("click", (e) => {
+          e.stopPropagation();
+          lightbox.remove();
+        });
+      document.body.appendChild(lightbox);
+    }
+
+    // Close button
+    modals.forEach((modal) => {
+      const closeBtn = modal.querySelector(".modal-close");
+      closeBtn?.addEventListener("click", closeModal);
+      // Click on overlay
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) closeModal();
+      });
+    });
+
+    // Keyboard navigation
+    document.addEventListener("keydown", (e) => {
+      if (!currentModal) return;
+      if (e.key === "Escape") closeModal();
+      if (e.key === "ArrowLeft") goPrev();
+      if (e.key === "ArrowRight") goNext();
+    });
+  });
+</script>
