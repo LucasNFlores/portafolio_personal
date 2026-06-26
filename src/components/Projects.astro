@@ -66,7 +66,10 @@ const projects = [
     repoUrl: undefined,
     imagesFolder: undefined,
   },
-  {
+  
+];
+/*
+{
     title: "Portafolio Personal",
     description:
       "Este sitio — construido con Astro y Tailwind CSS, optimizado para rendimiento, accesibilidad y SEO.",
@@ -75,7 +78,7 @@ const projects = [
     repoUrl: undefined,
     imagesFolder: undefined,
   },
-];
+*/
 
 // Read images at build time for projects with imagesFolder
 const projectsWithImages = projects.map((project) => {
@@ -119,24 +122,42 @@ const projectsWithImagesList = projectsWithImages.filter(
       </p>
     </div>
 
-    <div class="projects__grid" id="projects-grid" role="list">
-      {
-        projectsWithImages.map((project, i) => (
-          <div
-            class="fade-in"
-            style={`transition-delay:${i * 80}ms`}
-            role="listitem"
-          >
-            <ProjectCard
-              {...project}
-              image={project.images?.[0]}
-              images={project.images}
-              clickable={project.images && project.images.length > 0}
-              dataIndex={i}
-            />
-          </div>
-        ))
-      }
+    <div class="projects-carousel">
+      <button
+        type="button"
+        class="carousel-nav carousel-nav--prev"
+        aria-label="Proyecto anterior"
+      >
+        &lsaquo;
+      </button>
+
+      <div class="projects__track" id="projects-track" role="list">
+        {
+          projectsWithImages.map((project, i) => (
+            <div
+              class="projects__slide fade-in"
+              style={`transition-delay:${i * 80}ms`}
+              role="listitem"
+            >
+              <ProjectCard
+                {...project}
+                image={project.images?.[0]}
+                images={project.images}
+                clickable={project.images && project.images.length > 0}
+                dataIndex={i}
+              />
+            </div>
+          ))
+        }
+      </div>
+
+      <button
+        type="button"
+        class="carousel-nav carousel-nav--next"
+        aria-label="Proyecto siguiente"
+      >
+        &rsaquo;
+      </button>
     </div>
   </div>
 </section>
@@ -240,20 +261,102 @@ const projectsWithImagesList = projectsWithImages.filter(
     line-height: 1.6;
   }
 
-  .projects__grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+  .projects-carousel {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .projects__track {
+    display: flex;
     gap: 24px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 8px 0;
+    flex: 1;
+    min-width: 0;
+  }
+  .projects__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .projects__slide {
+    flex: 0 0 min(400px, 80vw);
+    scroll-snap-align: center;
+    display: flex;
+  }
+  .projects__slide > :global(*) {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  .projects__slide > :global(* > .project-card) {
+    flex: 1;
+  }
+
+  .carousel-nav {
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-primary);
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 150ms var(--ease-smooth),
+                border-color 150ms var(--ease-smooth),
+                opacity 150ms var(--ease-smooth);
+  }
+  .carousel-nav:hover {
+    background: var(--color-bg-secondary);
+    border-color: var(--color-accent-green);
+  }
+  .carousel-nav:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
   }
 
   @media (max-width: 1024px) {
-    .projects__grid {
-      grid-template-columns: repeat(2, 1fr);
+    .projects__slide {
+      flex: 0 0 min(360px, 75vw);
+    }
+    .carousel-nav {
+      width: 38px;
+      height: 38px;
+      font-size: 1.25rem;
+    }
+    .projects-carousel {
+      gap: 12px;
     }
   }
+
+  @media (max-width: 768px) {
+    .projects__track {
+      gap: 18px;
+    }
+  }
+
   @media (max-width: 640px) {
-    .projects__grid {
-      grid-template-columns: 1fr;
+    .carousel-nav {
+      display: none;
+    }
+    .projects-carousel {
+      gap: 0;
+    }
+    .projects__slide {
+      flex: 0 0 86vw;
+    }
+    .projects__track {
+      gap: 14px;
+      padding: 8px 4px;
     }
   }
 
@@ -478,15 +581,45 @@ const projectsWithImagesList = projectsWithImages.filter(
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const modals = document.querySelectorAll(".modal-overlay");
-    const grid = document.getElementById("projects-grid");
+    const track = document.getElementById("projects-track");
+    const prevBtn = document.querySelector(".carousel-nav--prev");
+    const nextBtn = document.querySelector(".carousel-nav--next");
     let currentModal = null;
     let currentSlideIndex = 0;
     let slides = [];
     let dots = [];
     let counter = null;
 
+    function updateNavButtons() {
+      if (!track) return;
+      const maxScroll = track.scrollWidth - track.clientWidth;
+      prevBtn!.disabled = track.scrollLeft <= 0;
+      nextBtn!.disabled = track.scrollLeft >= maxScroll - 1;
+    }
+
+    function slideStep() {
+      if (!track) return 400;
+      const firstSlide = track.querySelector(".projects__slide") as HTMLElement | null;
+      const styles = window.getComputedStyle(track);
+      const gap = parseFloat(styles.columnGap) || 24;
+      return firstSlide ? firstSlide.offsetWidth + gap : track.clientWidth * 0.8;
+    }
+
+    prevBtn?.addEventListener("click", () => {
+      track?.scrollBy({ left: -slideStep(), behavior: "smooth" });
+    });
+
+    nextBtn?.addEventListener("click", () => {
+      track?.scrollBy({ left: slideStep(), behavior: "smooth" });
+    });
+
+    track?.addEventListener("scroll", updateNavButtons, { passive: true });
+    window.addEventListener("resize", updateNavButtons);
+
+    updateNavButtons();
+
     // Open modal when clicking a card
-    grid?.addEventListener("click", (e) => {
+    track?.addEventListener("click", (e) => {
       const btn = e.target.closest(".project-card-btn");
       if (!btn) return;
       const index = btn.dataset.index;

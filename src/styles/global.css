@@ -31,6 +31,7 @@ html {
   font-size: 16px;
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
+  scroll-snap-type: y proximity;
 }
 
 body {
@@ -43,6 +44,55 @@ body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  position: relative;
+}
+
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(100px);
+  pointer-events: none;
+  z-index: -1;
+}
+
+body::before {
+  width: 600px;
+  height: 600px;
+  background: color-mix(in srgb, var(--color-accent-green) 6%, transparent);
+  top: -200px;
+  right: -100px;
+  animation: blob-float 20s ease-in-out infinite;
+}
+
+body::after {
+  width: 500px;
+  height: 500px;
+  background: color-mix(in srgb, var(--color-accent-purple) 6%, transparent);
+  bottom: -150px;
+  left: -150px;
+  animation: blob-float 25s ease-in-out infinite reverse;
+}
+
+@keyframes blob-float {
+
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+
+  25% {
+    transform: translate(30px, 20px);
+  }
+
+  50% {
+    transform: translate(-20px, 40px);
+  }
+
+  75% {
+    transform: translate(15px, -15px);
+  }
 }
 
 :focus-visible {
@@ -184,8 +234,10 @@ video {
 }
 
 .section {
-  padding-block: 96px;
-}
+    padding-block: 96px;
+    scroll-margin-top: 80px;
+    scroll-snap-align: start;
+  }
 
 @media (max-width: 768px) {
   .section {
