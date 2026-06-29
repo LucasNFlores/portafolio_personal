@@ -138,6 +138,16 @@ const coverImage = images && images.length > 0 ? images[0] : image;
     max-height: clamp(440px, 72vh, 600px);
   }
 
+  @media (max-width: 640px) {
+    .project-card {
+      max-height: none;
+    }
+    .project-card__desc {
+      -webkit-line-clamp: unset;
+      overflow: visible;
+    }
+  }
+
   .project-card__img-wrap {
     position: relative;
     height: clamp(140px, 22vh, 200px);

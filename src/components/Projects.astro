@@ -43,17 +43,6 @@ const projects = [
     imagesFolder: "almacen_en_orden",
   },
   {
-    title: "Dashboard BI — RedCoatic",
-    description:
-      "Pipeline de datos y dashboards analíticos para la plataforma educativa RedCoatic. " +
-      "Integré múltiples fuentes (Google Forms, Google Sheets y base de datos MySQL) con Python, " +
-      "realizando limpieza y normalización en Power BI para producir reportes de distribución " +
-      "de estudiantes (sexo, localidad, nivel educativo), análisis por curso con métricas de " +
-      "inscripciones, aprobaciones y deserciones, y seguimiento por categoría de curso.",
-    tags: ["Power BI", "Python", "MySQL", "Google Sheets API"],
-    imagesFolder: undefined,
-  },
-  {
     title: "Glosario Amigo",
     description:
       "App Android nativa que arranqué para adentrarme en el desarrollo mobile. " +
@@ -67,6 +56,17 @@ const projects = [
     imagesFolder: undefined,
   },
   
+  {
+    title: "Dashboard BI — RedCoatic",
+    description:
+      "Pipeline de datos y dashboards analíticos para la plataforma educativa RedCoatic. " +
+      "Integré múltiples fuentes (Google Forms, Google Sheets y base de datos MySQL) con Python, " +
+      "realizando limpieza y normalización en Power BI para producir reportes de distribución " +
+      "de estudiantes (sexo, localidad, nivel educativo), análisis por curso con métricas de " +
+      "inscripciones, aprobaciones y deserciones, y seguimiento por categoría de curso.",
+    tags: ["Power BI", "Python", "MySQL", "Google Sheets API"],
+    imagesFolder: undefined,
+  },
 ];
 /*
 {
@@ -349,14 +349,24 @@ const projectsWithImagesList = projectsWithImages.filter(
       display: none;
     }
     .projects-carousel {
+      display: block;
       gap: 0;
     }
-    .projects__slide {
-      flex: 0 0 86vw;
-    }
     .projects__track {
-      gap: 14px;
-      padding: 8px 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      overflow-x: visible;
+      overflow-y: visible;
+      scroll-snap-type: none;
+      padding: 0;
+      flex: none;
+      min-width: 0;
+    }
+    .projects__slide {
+      flex: 0 0 auto;
+      width: 100%;
+      scroll-snap-align: none;
     }
   }
 
